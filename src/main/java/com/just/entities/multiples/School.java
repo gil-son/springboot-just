@@ -1,11 +1,12 @@
 package com.just.entities.multiples;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.util.List;
 
@@ -22,8 +23,8 @@ public class School implements Serializable {
     private Long id;
 
     @OneToMany(mappedBy = "school", cascade = CascadeType.ALL)
+    @JsonBackReference // Prevents recursion
     private List<Student> students;
-
     public School(List<Student> students) {
         this.students = students;
     }

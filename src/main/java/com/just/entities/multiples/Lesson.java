@@ -1,5 +1,6 @@
 package com.just.entities.multiples;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -26,9 +27,8 @@ public class Lesson {
 
     @ManyToOne
     @JoinColumn(name = "student_id")
+    @JsonBackReference // Prevents recursion
     private Student student;
-
-    // Constructors, Getters, and Setters
 
     public Lesson(String materia, String hours) {
         this.materia = materia;

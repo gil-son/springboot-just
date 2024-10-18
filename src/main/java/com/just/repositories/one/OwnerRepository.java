@@ -1,4 +1,4 @@
-package com.just.repositories;
+package com.just.repositories.one;
 
 import com.just.entities.one.Owner;
 import org.springframework.data.jpa.repository.JpaRepository;

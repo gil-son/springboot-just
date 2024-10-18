@@ -1,7 +1,7 @@
 package com.just.services.one;
 
 import com.just.entities.one.Store;
-import com.just.repositories.StoreRepository;
+import com.just.repositories.one.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
