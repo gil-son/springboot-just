@@ -23,6 +23,9 @@ public class SchoolService {
     @Autowired
     private LessonRepository lessonRepository;
 
+    @Autowired
+    private AddHoursServiceImp addHoursServiceImp;
+
     @Transactional
     public School saveSchool(School school) {
         // Iterate through students and lessons to ensure proper relationships
@@ -33,6 +36,25 @@ public class SchoolService {
             student.getLessons().forEach(lesson -> {
                 lesson.setStudent(student); // Set the relationship for Student -> Lessons
                 lessonRepository.save(lesson); // Save each lesson
+            });
+
+            studentRepository.save(student); // Save each student after lessons
+        });
+
+        // Save the school after mapping the relationships
+        return schoolRepository.save(school);
+    }
+
+    @Transactional
+    public School saveSchoolEvent(School school) {
+        // Iterate through students and lessons to ensure proper relationships
+        school.getStudents().forEach(student -> {
+            student.setSchool(school); // Set the relationship for School -> Students
+
+            // Map each lesson to the student
+            student.getLessons().forEach(lesson -> {
+                lesson.setStudent(student); // Set the relationship for Student -> Lessons
+                lessonRepository.save(addHoursServiceImp.AddHours(lesson)); // Save each lesson + hours rule
             });
 
             studentRepository.save(student); // Save each student after lessons

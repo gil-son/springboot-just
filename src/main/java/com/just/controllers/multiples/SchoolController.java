@@ -34,6 +34,12 @@ public class SchoolController {
         return new ResponseEntity<>(savedSchool, HttpStatus.CREATED);
     }
 
+    @PostMapping(value = "/mapperless-event")
+    public ResponseEntity<School> createSchoolEvent(@RequestBody School school) {
+        School savedSchool = schoolService.saveSchoolEvent(school);
+        return new ResponseEntity<>(savedSchool, HttpStatus.CREATED);
+    }
+
     @PostMapping(value = "/mapper")
     public ResponseEntity<School> createSchoolMapper(@RequestBody Map<String, Object> schoolMap) {
 
@@ -45,5 +51,4 @@ public class SchoolController {
         School savedSchool = schoolService.saveSchool(school);
         return new ResponseEntity<>(savedSchool, HttpStatus.CREATED);
     }
-
 }
