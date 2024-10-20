@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 
 @Service
 public class SchoolService {
@@ -39,5 +41,4 @@ public class SchoolService {
         // Save the school after mapping the relationships
         return schoolRepository.save(school);
     }
-
 }
