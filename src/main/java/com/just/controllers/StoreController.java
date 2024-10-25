@@ -1,4 +1,4 @@
-package com.just.controllers.one;
+package com.just.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.just.entities.one.Store;
@@ -20,7 +20,7 @@ public class StoreController {
 
     private static final Logger logger = LoggerFactory.getLogger(Store.class);
 
-    private final StoreService storeService;
+    private StoreService storeService;
 
     public StoreController(StoreService storeService) {
         this.storeService = storeService;
