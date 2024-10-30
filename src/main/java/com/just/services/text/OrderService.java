@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,26 +42,50 @@ public class OrderService {
             String line;
 
             while ((line = br.readLine()) != null) {
-                int userId = Integer.parseInt(line.substring(0, 10).trim());
-                String userName = line.substring(10, 55).trim();
-                int orderId = Integer.parseInt(line.substring(55, 65).trim());
-                int productId = Integer.parseInt(line.substring(65, 75).trim());
-                BigDecimal value = new BigDecimal(line.substring(75, 87).trim());
-                LocalDate date = LocalDate.parse(line.substring(87, 95).trim(), formatter);
+                // Log da linha atual para depuração
+                System.out.println("Processing line: " + line);
 
-                User user = userMap.computeIfAbsent(userId, id -> new User(userId, userName));
-                Optional<Order> existingOrder = user.getOrders().stream().filter(o -> o.getOrderId() == orderId).findFirst();
+                try {
+                    // Garantindo que apenas caracteres numéricos sejam lidos
+                    int userId = Integer.parseInt(line.substring(0, 10).replaceAll("\\D", ""));
+                    String userName = line.substring(16, 23).trim();
+                    int orderId = Integer.parseInt(line.substring(52, 61).replaceAll("\\D", ""));
+                    int productId = Integer.parseInt(line.substring(63, 72).replaceAll("\\D", ""));
 
-                Order order;
-                if (existingOrder.isPresent()) {
-                    order = existingOrder.get();
-                } else {
-                    order = new Order(orderId, date);
-                    user.addOrder(order);
+                    // Ajuste: Garantir que o valor esteja limpo antes do parsing
+                    String valueString = line.substring(78, 83).trim().replace(",", ".").replaceAll(" ", "");
+                    BigDecimal value = new BigDecimal(valueString);
+
+                    // Certifique-se de que a substring da data está correta
+                    String dateString = line.substring(87, 96).trim(); // Aqui, a data deve ter 8 caracteres
+
+                    // Verificação do tamanho da data
+                    if (dateString.length() != 8) {
+                        throw new IllegalArgumentException("Data em formato inválido: " + dateString);
+                    }
+
+                    LocalDate date = LocalDate.parse(dateString, formatter);
+
+                    // Criação ou atualização de objetos User e Order
+                    User user = userMap.computeIfAbsent(userId, id -> new User(userId, userName));
+                    Optional<Order> existingOrder = user.getOrders().stream().filter(o -> o.getOrderId() == orderId).findFirst();
+
+                    Order order;
+                    if (existingOrder.isPresent()) {
+                        order = existingOrder.get();
+                    } else {
+                        order = new Order(orderId, date);
+                        user.addOrder(order);
+                    }
+
+                    Product product = new Product(productId, value);
+                    order.addProduct(product);
+
+                } catch (NumberFormatException | DateTimeParseException e) {
+                    System.err.println("Error parsing line: " + line);
+                    e.printStackTrace();
+                    throw e; // Re-throw para que o erro seja visível no log e status HTTP 500
                 }
-
-                Product product = new Product(productId, value);
-                order.addProduct(product);
             }
         }
 
@@ -68,5 +93,7 @@ public class OrderService {
         userRepository.saveAll(users);
         return users;
     }
+
+
 }
 

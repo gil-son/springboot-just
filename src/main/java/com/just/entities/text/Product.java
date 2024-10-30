@@ -30,6 +30,7 @@ public class Product implements Serializable {
     private BigDecimal value;
 
     @ManyToOne
+    @JsonBackReference // evita recursividade
     @JoinColumn(name = "order_id")
     private Order order;
 

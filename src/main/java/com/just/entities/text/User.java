@@ -32,6 +32,7 @@ public class User implements Serializable {
     private String name;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference // evita recursividade
     private List<Order> orders = new ArrayList<>();
 
     public User(int userId, String name) {
